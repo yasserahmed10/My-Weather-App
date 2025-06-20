@@ -21,14 +21,25 @@ class LocationRepositoryImpl(
             val locationTask = fusedLocationProviderClient.lastLocation
 
             locationTask.addOnSuccessListener { loc ->
-                val city = getCity(loc)
-                cont.resume(
-                    Location(
-                        latitude = loc.latitude,
-                        longitude = loc.longitude,
-                        city = city
+                if (loc != null) {
+                    val city = getCity(loc)
+                    cont.resume(
+                        Location(
+                            latitude = loc.latitude,
+                            longitude = loc.longitude,
+                            city = city
+                        )
                     )
-                )
+                } else {
+                    // Handle null location case
+                    cont.resume(
+                        Location(
+                            latitude = 0.0,
+                            longitude = 0.0,
+                            city = "Unknown"
+                        )
+                    )
+                }
             }
             locationTask.addOnFailureListener {
                 throw Exception()
